@@ -1,0 +1,47 @@
+.StickerOptions {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 1px solid black;
+  &Leftwrap {
+    display: flex;
+  }
+}
+
+.heart {
+	color: rgb(55, 63, 77);
+	cursor: pointer;
+	margin-right: 7px;
+}
+.heartActive {
+	color: rgba(253, 26, 75, 0.897);
+	cursor: pointer;
+	margin-right: 7px;
+}
+
+.star {
+	color: rgb(55, 63, 77);
+	cursor: pointer;
+}
+.starActive {
+	color: rgb(226, 150, 9);
+	cursor: pointer;
+}
+
+.pin {
+	margin-right: 20px;
+	color: rgb(216, 50, 50);
+	height: 25px;
+	display: inline-block;
+}
+.close {
+	display: inline-block;
+	color: rgb(55, 63, 77);
+	cursor: pointer;
+	svg {
+		height: 25px;
+	}
+	&:hover {
+		color: rgb(39, 100, 207);
+	}
+}

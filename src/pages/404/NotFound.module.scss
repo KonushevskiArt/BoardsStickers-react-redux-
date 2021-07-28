@@ -1,0 +1,24 @@
+.NotFound {
+  height: 100%;
+  color: aliceblue;
+  display: flex;
+  // justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background: rgb(26,111,170);
+  background: linear-gradient(287deg, rgba(26,111,170,1) 47%, rgba(0,39,255,1) 100%);
+  & h2 {
+    margin-top: 20vh;
+    font-size: 36px;
+    margin-bottom: 40px;
+  }
+  & a {
+    color: rgb(116, 245, 148);
+    text-decoration: none;
+    font-size: 24px;
+    transition: color .3s;
+    &:hover {
+      color: rgb(228, 151, 151);
+    }
+  }
+}

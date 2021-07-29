@@ -25,13 +25,10 @@ const  Menu = (props) => {
   const handlerClickPlus = () => {
     showAddBoard(true);
   }
-  const handlerClickTrushCan = (name) => {
-
-  }
-
+  
   const boards = (arrBoards) => {
     return arrBoards.map((el, i) => {
-      return <BoardInMenu el={el} key={i} handlerClickTrushCan={handlerClickTrushCan}/>
+      return <BoardInMenu el={el} key={i}/>
     })
   }
   

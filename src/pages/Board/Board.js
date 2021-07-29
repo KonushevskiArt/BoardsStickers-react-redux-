@@ -1,43 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './Board.module.scss';
 import {Sticker} from '../../component/Sticker/Sticker.js';
-import {createDate} from '../../utils/createDate.js';
+// import {createDate} from '../../utils/createDate.js';
 import { Link } from 'react-router-dom';
+import {connect} from 'react-redux'; 
+import {addSticker, fetchBoard} from '../../store/actions/board.js';
+import {Spinner} from '../../component/Spinner/Spinner.js';
 
 let currentZindex = 10;
+//при перемещении перемещать элемент в конец родителя apendChild вместо Zindex
 
 function Board(props) {
-  const {name = 'name', initialStickers = []} = props;
 
-  const [stickers, setStickers] = useState(initialStickers);
+  const loading = props.loading;
+  const board = props.data.board;
+  
+  const [stickers, setStickers] = useState([]);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    props.fetchBoard(props.match.path);
+  }, []);
+  
+  useEffect(()=> {
+    if (board.stickers) {
+      setStickers(board.stickers)
+      setName(board.name)
+    }
+  }, [props])
+
+
   const [isShowList, setShowList] = useState(false);
 
   let movedSticker = null,
       movedStickerInState = null,
       shiftX,
       shiftY;
-
-  const dblClickHandler = (e) => {
-    if (e.target === e.currentTarget) {
-      const halfWidthSticker = 133;
-      const topOffsetSticker = 20
-  
-      const newSticker = {
-        id: Math.floor(Math.random() * 99999) + e.pageX + e.pageY,
-        value: '',
-        isFavorite: false,
-        isImportant: false,
-        top: e.pageY - topOffsetSticker,
-        left: e.pageX - halfWidthSticker,
-        date: createDate(),
-        zIndex: currentZindex += 1
-      }
-  
-      const copyStickers = stickers.slice();
-      copyStickers.push(newSticker)
-      setStickers(copyStickers);
-    }
-  }
 
   const findClickedSticker = (e, stickers) => {
     const currentSticker = e.currentTarget.closest('.sticker');
@@ -59,7 +57,7 @@ function Board(props) {
     const copyStickers = stickers.slice()
     const index = stickers.findIndex((el) => el.id === Number(currentStickerInState.id))
     copyStickers.splice(index, 1);
-    setStickers(copyStickers);
+    // setStickers(copyStickers);
   }
 
   const handlerChangeStickerArea = (e, value) => {
@@ -110,24 +108,19 @@ function Board(props) {
   const toggleList = () => {
     setShowList(!isShowList);
   }
-
-  return (
-    <div 
-      className={classes.Board} 
-      onDoubleClick={dblClickHandler}
-      onMouseDown={(e) => handlerMouseDown(e)}
-      onMouseUp={(e) => handlerMouseUp(e)} 
-    >
+  const menu = () => {
+    return (
       <div className={classes.wrapperMenu}>
         <button className={classes.menu} onClick={toggleList}>
           <svg enableBackground="new 0 0 515.555 515.555" height="20px" viewBox="0 0 515.555 515.555" width="20px" ><path d="m303.347 18.875c25.167 25.167 25.167 65.971 0 91.138s-65.971 25.167-91.138 0-25.167-65.971 0-91.138c25.166-25.167 65.97-25.167 91.138 0"/><path d="m303.347 212.209c25.167 25.167 25.167 65.971 0 91.138s-65.971 25.167-91.138 0-25.167-65.971 0-91.138c25.166-25.167 65.97-25.167 91.138 0"/><path d="m303.347 405.541c25.167 25.167 25.167 65.971 0 91.138s-65.971 25.167-91.138 0-25.167-65.971 0-91.138c25.166-25.167 65.97-25.167 91.138 0"/></svg>
         </button>
         {isShowList && menuList()}
       </div>
-      <h2 className={classes.title}>{name}</h2>
-      {stickers.length === 0 && <span className={classes.help}>make double click on the board to create a sticker</span>}
-      
-      <div className={classes.board}>
+    )
+  }
+  const stickersOnPage = (stickers) => {
+    return (
+      <div >
         {stickers.map((el) => {
           return (
           <Sticker 
@@ -140,8 +133,43 @@ function Board(props) {
           />)
         })}
       </div>
+    )
+  }
+
+  return (
+    <div 
+      className={classes.Board} 
+      onDoubleClick={props.addSticker}
+      onMouseDown={(e) => handlerMouseDown(e)}
+      onMouseUp={(e) => handlerMouseUp(e)} 
+    >
+      {
+      loading 
+      ? <Spinner/> 
+      : <>
+          {menu()}
+          <h2 className={classes.title}>{name}</h2>
+          {stickers.length === 0 && <span className={classes.help}>make double click on the board to create a sticker</span>}
+          
+          {stickersOnPage(stickers)}
+        </>
+      }
     </div>
   )
 } 
 
-export {Board};
+const mapStateToProps = (state) => {
+  return {
+    'loading': state.board.loading,
+    'data': state.board,
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchBoard: (id) => dispatch(fetchBoard(id)),
+    addSticker: (e) => dispatch(addSticker(e))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board);

@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
-import {boardsReducer} from './boardsReducer.js';
+import {menuReducer} from './menuReducer.js';
+import { boardReducer } from "./boardReducer.js";
 
 export default combineReducers({
-  boards: boardsReducer
+  boards: menuReducer,
+  board: boardReducer
 })

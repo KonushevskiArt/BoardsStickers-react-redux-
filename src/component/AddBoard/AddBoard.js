@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import classes from './AddBoard.module.scss';
 import { connect } from "react-redux";
+import { addBoard } from '../../store/actions/menu';
 
 function AddBoard(props) {
 
@@ -59,10 +60,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAdd: (name) => dispatch({type: 'ADD-BOARD', name}),
+    onAdd: (name) => dispatch(addBoard(name)),
   }
 }
 
-
-// export {AddBoard};
 export default connect(mapStateToProps, mapDispatchToProps)(AddBoard);

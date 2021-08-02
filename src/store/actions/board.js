@@ -1,9 +1,17 @@
 import axios from '../../axios/axios-boards.js';
-import {FETCH_BOARD_START} from './actionTypes.js';
-import {FETCH_BOARD_SUCCESS} from './actionTypes.js';
-import {FETCH_BOARD_ERROR} from './actionTypes.js';
-import {ADD_STICKER} from './actionTypes.js';
-import {REMOVE_STICKER} from './actionTypes.js';
+import {
+  FETCH_BOARD_START,
+  FETCH_BOARD_SUCCESS,
+  FETCH_BOARD_ERROR,
+  ADD_STICKER,
+  REMOVE_STICKER,
+  CHANGE_STICKER_VALUE,
+  CHANGE_STICKER_IMPORTANT,
+  CHANGE_STICKER_FAVORITE,
+  DRAG_STICKER,
+  DROP_STICKER,
+} from './actionTypes.js';
+
 
 export function addSticker(evt) {
   return {
@@ -12,10 +20,10 @@ export function addSticker(evt) {
   }
 } 
 
-export function removeSticker(name) {
+export function removeSticker(evt) {
   return {
     type: REMOVE_STICKER,
-    name
+    evt
   }
 }  
 
@@ -49,4 +57,37 @@ export function fetchBoardError(error) {
     error
   }
 } 
+export function changeStickerValue(evt, value) {
+  return {
+    type: CHANGE_STICKER_VALUE,
+    evt,
+    value
+  }
+}
+export function changeStickerImportant(evt) {
+  return {
+    type: CHANGE_STICKER_IMPORTANT,
+    evt
+  }
+}
+export function changeStickerFavorite(evt) {
+  return {
+    type: CHANGE_STICKER_FAVORITE,
+    evt
+  }
+}
+export function dragSticker(evt, movedStickerClass) {
+  return {
+    type: DRAG_STICKER,
+    evt,
+    movedStickerClass
+  }
+}
+export function dropSticker(evt, movedStickerClass) {
+  return {
+    type: DROP_STICKER,
+    evt,
+    movedStickerClass
+  }
+}
 

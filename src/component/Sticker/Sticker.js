@@ -1,46 +1,33 @@
 import React, { useState } from 'react';
 import classes from './Sticker.module.scss';
-import {StickerOptions} from '../StickerOptions/StickerOptions.js'; 
+import StickerOptions from '../StickerOptions/StickerOptions.js'; 
 import {StickerData} from '../StickerData/StickerData.js';
+import { connect } from 'react-redux';
+import { changeStickerValue } from '../../store/actions/board';
 
 function Sticker(props) {
-  const {id, value, isFavorite, isImportant, top, left, date, zIndex} = props.options;
+  const {id, value, isFavorite, isImportant, top, left, date} = props.options;
 
   const [areaValue, setValue] = useState(value);
-  const [isStateFavorite, setStateFavorite] = useState(isFavorite);
-  const [isStateImportant, setStateImportant] = useState(isImportant);
-
   
   const position = {
     top,
     left,
-    zIndex 
   }
   
   // class
   const cls = [classes.Sticker, 'sticker'];
 
-  if (isStateImportant) {
+  if (isImportant) {
     cls.push(classes.important);
   }
-  if (isStateFavorite) {
+  if (isFavorite) {
     cls.push(classes.favorite);
   }
   // /class
 
-  const handlerClickImportant = (e) => {
-    props.handlerClickImportant(e)
-    setStateImportant(!isStateImportant);
-  }
-
-  const handlerClickFavorite = (e) => {
-    props.handlerClickFavorite(e)
-    setStateFavorite(!isStateFavorite);
-  }
-
   const handleOnChange = (e) => {
     setValue(e.target.value);
-    props.handlerChangeStickerArea(e, areaValue);
   }
 
   const sticker = (
@@ -48,11 +35,15 @@ function Sticker(props) {
       <StickerOptions 
         isFavorite={isFavorite}
         isImportant={isImportant}
-        handlerClickImportant={handlerClickImportant}
-        handlerClickFavorite={handlerClickFavorite}
-        handlerClickClose={props.handlerClickClose}
       />
-      <textarea className={classes.stickerText} name="text" placeholder="write here" onChange={(e) => handleOnChange(e)} value={areaValue}></textarea>
+      <textarea 
+        className={classes.stickerText} 
+        name="text" 
+        placeholder="write here" 
+        onChange={(e) => handleOnChange(e)} 
+        onBlur={(e) => props.changeStickerValue(e, areaValue)}
+        value={areaValue}>
+      </textarea>
       
       <StickerData date={date}/>
     </div>
@@ -60,5 +51,16 @@ function Sticker(props) {
 
   return sticker;
 } 
+const mapStateToProps = (state) => {
+  return {
+    'data': state.board
+  };
+}
 
-export {Sticker};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeStickerValue: (e, value) => dispatch(changeStickerValue(e, value)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sticker);

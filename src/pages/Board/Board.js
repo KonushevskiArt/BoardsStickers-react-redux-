@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import classes from './Board.module.scss';
-import {Sticker} from '../../component/Sticker/Sticker.js';
-// import {createDate} from '../../utils/createDate.js';
+import Sticker from '../../component/Sticker/Sticker.js';
 import { Link } from 'react-router-dom';
 import {connect} from 'react-redux'; 
-import {addSticker, fetchBoard} from '../../store/actions/board.js';
+import {addSticker, fetchBoard, dragSticker, dropSticker} from '../../store/actions/board.js';
 import {Spinner} from '../../component/Spinner/Spinner.js';
-
-let currentZindex = 10;
-//при перемещении перемещать элемент в конец родителя apendChild вместо Zindex
 
 function Board(props) {
 
@@ -31,70 +27,6 @@ function Board(props) {
 
 
   const [isShowList, setShowList] = useState(false);
-
-  let movedSticker = null,
-      movedStickerInState = null,
-      shiftX,
-      shiftY;
-
-  const findClickedSticker = (e, stickers) => {
-    const currentSticker = e.currentTarget.closest('.sticker');
-    return stickers.filter((el) => el.id === Number(currentSticker.dataset.id))[0];
-  }
-
-  const handlerClickImportant = (e) => {
-    const currentStickerInState = findClickedSticker(e, stickers);
-    currentStickerInState.isImportant = !currentStickerInState.isImportant;
-  } 
-
-  const handlerClickFavorite = (e) => {
-    const currentStickerInState = findClickedSticker(e, stickers);
-    currentStickerInState.isFavorite = !currentStickerInState.isFavorite;
-  }
-
-  const handlerClickClose = (e) => {
-    const currentStickerInState = findClickedSticker(e, stickers);
-    const copyStickers = stickers.slice()
-    const index = stickers.findIndex((el) => el.id === Number(currentStickerInState.id))
-    copyStickers.splice(index, 1);
-    // setStickers(copyStickers);
-  }
-
-  const handlerChangeStickerArea = (e, value) => {
-    const currentStickerInState = findClickedSticker(e, stickers);
-    currentStickerInState.value = value;
-  }
-
-  const handlerMouseDown = (e) => {
-    movedSticker = e.target.closest('.sticker');
-    if (movedSticker) {
-      movedStickerInState = stickers.filter((el) => el.id === Number(movedSticker.dataset.id))[0];
-      movedSticker.style.zIndex = currentZindex += 1;
-      movedStickerInState.zIndex = currentZindex;
-      if (e.target.tagName !== 'TEXTAREA') {
-        e.currentTarget.addEventListener('mousemove', handlerMouseMove);
-        shiftY = e.clientY - movedSticker.offsetTop;
-        shiftX = e.clientX - movedSticker.offsetLeft;
-        movedSticker.style.cursor = 'move';
-        movedSticker.classList.add(classes.moveSticker);
-      }
-    }
-  }
-
-  const handlerMouseUp = (e) => {
-    if (movedSticker) {
-      e.currentTarget.removeEventListener('mousemove', handlerMouseMove);
-      movedSticker.style.cursor = 'default';
-      movedSticker.classList.remove(classes.moveSticker);
-      movedSticker = null;
-      movedStickerInState= null;
-    }
-  }
-
-  const handlerMouseMove = (e) => {
-    movedStickerInState.top = movedSticker.style.top = e.clientY - shiftY + 'px';
-    movedStickerInState.left = movedSticker.style.left = e.clientX - shiftX + 'px';
-  }
 
   const menuList = () => {
     return (
@@ -120,19 +52,15 @@ function Board(props) {
   }
   const stickersOnPage = (stickers) => {
     return (
-      <div >
+      < >
         {stickers.map((el) => {
           return (
           <Sticker 
             options={el} 
             key={el.id}
-            handlerClickImportant={handlerClickImportant}
-            handlerClickFavorite={handlerClickFavorite}
-            handlerClickClose={handlerClickClose}
-            handlerChangeStickerArea={handlerChangeStickerArea}
           />)
         })}
-      </div>
+      </>
     )
   }
 
@@ -140,8 +68,8 @@ function Board(props) {
     <div 
       className={classes.Board} 
       onDoubleClick={props.addSticker}
-      onMouseDown={(e) => handlerMouseDown(e)}
-      onMouseUp={(e) => handlerMouseUp(e)} 
+      onMouseDown={(e) => props.dragSticker(e, classes.moveSticker)}
+      onMouseUp={(e) => props.dropSticker(e, classes.moveSticker)} 
     >
       {
       loading 
@@ -168,7 +96,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchBoard: (id) => dispatch(fetchBoard(id)),
-    addSticker: (e) => dispatch(addSticker(e))
+    addSticker: (e) => dispatch(addSticker(e)),
+    dragSticker: (e, movedStickerClass) => dispatch(dragSticker(e, movedStickerClass)),
+    dropSticker: (e, movedStickerClass) => dispatch(dropSticker(e, movedStickerClass)),
   }
 }
 
